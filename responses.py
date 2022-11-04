@@ -5,7 +5,7 @@ from table2ascii import table2ascii as t2a, PresetStyle
 PAGE_LIMIT = 15
 
 
-def convert_to_table(data_json: json, start=0) -> str:
+def convert_list_to_table(data_json: json, start=0) -> str:
 
     body = []
 
@@ -42,25 +42,42 @@ def convert_to_table(data_json: json, start=0) -> str:
     return f"```\nItems from {start} to {start+PAGE_LIMIT} for server <{data_json[0]['location']['locAddress']}>\n\n{output}\n```"
 
 
+def convert_single_to_table(data_json: json) -> str:
+
+    body = []
+
+    body.append([
+                0,
+                data_json["id"],
+                data_json["name"],
+                data_json["qty"],
+                data_json["location"]["locX"],
+                data_json["location"]["locY"]])
+    output = t2a(
+        header=["row",
+                "id",
+                "name",
+                "qty",
+                "x",
+                "y"],
+        body=body,
+        first_col_heading=True
+    )
+
+    return f"```\n{output}\n\nserver: {data_json['location']['locAddress']}\ncomment: {data_json['comment']}```"
+
+
 def callApi(param: str, start=0) -> str:
-
-    # import json
-
-    # store the URL in url as
-    # parameter for urlopen
 
     url = "http://45.63.39.115:8080"+param
 
-    # store the response of URL
-
     response = urlopen(url)
-
-    # storing the JSON response
-    # from url in data
 
     data_json = json.loads(response.read())
 
-    return convert_to_table(data_json, start=start)
+    if "getFromId" in param:
+        return convert_single_to_table(data_json)
+    return convert_list_to_table(data_json, start=start)
 
 
 def get_response(message: str) -> str:
@@ -76,6 +93,11 @@ def get_response(message: str) -> str:
                 start_value = int(p_message.split("start=")[1].split(" ")[0])
             return callApi(api_call, start=start_value)
         return 'Please enter location too'
+
+    if 'getItem' in p_message:
+        id = p_message.split(" ")[1]
+        api_call = '/getFromId?id=' + id.strip()
+        return callApi(api_call)
 
     if p_message.lower() == '!help':
         return '`1. getGetAllItems <location> start=<start optional>`'
