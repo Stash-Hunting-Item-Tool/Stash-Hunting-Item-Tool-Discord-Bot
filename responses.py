@@ -121,24 +121,30 @@ def call_api_table_format(param: str, start=0) -> str:
 
 
 def get_start_value(message: str) -> int:
-    start_value = 0
-    if len(message.split("start=")) == 2:
-        start_value = int(message.split("start=")[1].split(" ")[0])
-    return start_value
+    raw_val = get_value_by_name(message=message, value_name="start")
+    if raw_val.isdigit():
+        return int(raw_val)
+    return 0
+
+
+def get_value_by_name(message: str, value_name: str) -> str:
+    value = ""
+    if len(message.split(f"{value_name}=")) == 2:
+        value = message.split(f"{value_name}=")[1].split(" ")[0]
+    return value
 
 
 def get_response(message: str) -> str:
     p_message = message
 
     if 'getGetAllItems' in p_message and p_message.split(" ")[0] == 'getGetAllItems':
-        print(p_message)
-        address = p_message.split(" ")[1]
-        if address != "":
+        address = get_value_by_name(p_message, "address")
+        if address and address != "":
             api_call = '/getAllAtLocation?address=' + address
             start_value = get_start_value(p_message)
 
-            if len(p_message.split("name=")) == 2:
-                name = p_message.split("name=")[1].split(" ")[0]
+            name = get_value_by_name(p_message, "name")
+            if name != "":
                 return call_api_table_format(f"/getAllAtLocationWithName?address={address}&name={name}", start=start_value)
 
             return call_api_table_format(api_call, start=start_value)
@@ -152,21 +158,22 @@ def get_response(message: str) -> str:
 
     if 'getAllStashes' in p_message:
         api_call = '/getAllLocations'
-        if len(p_message.split("address=")) > 1:
-            address = p_message.split("address=")[1].split(" ")[0]
-            if address and address != "":
-                data_jsons = call_api(api_call)
-                data_jsons_cleaned = []
-                for obj in data_jsons:
-                    if obj["locAddress"] == address:
-                        data_jsons_cleaned.append(obj)
-                # return convert_to_table(data_jsons_cleaned, api_call,
-                #                         start=get_start_value(p_message))
+        address = get_value_by_name(p_message, "address")
+        if address and address != "":
+            data_jsons = call_api(api_call)
+            data_jsons_cleaned = []
+            for obj in data_jsons:
+                if obj["locAddress"] == address:
+                    data_jsons_cleaned.append(obj)
 
-                return print_locations_table(data_jsons_cleaned, start=get_start_value(p_message))
+            return print_locations_table(data_jsons_cleaned, start=get_start_value(p_message))
         return call_api_table_format(api_call, start=get_start_value(p_message))
 
     if p_message.lower() == '!help':
-        return '`1. getGetAllItems <location> start=<start optional>`'
+        return '```\n'
+    + '1. getGetAllItems adress=<server adddress> start=<start optional>\n'
+    + '2. getItem <id>'
+    + '3. getAllStashes address=<server adddress optional> start=<start optional>'
+    + '```'
 
     return 'I didn\'t understand what you wrote. Try typing "!help".'
