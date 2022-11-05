@@ -124,7 +124,7 @@ def get_start_value(message: str) -> int:
     return 0
 
 
-def get_response(message: str) -> str:
+def get_response(message: str, user: str) -> str:
     p_message = message
 
     if 'getGetAllItems' in p_message and p_message.split(" ")[0] == 'getGetAllItems':
@@ -197,7 +197,7 @@ def get_response(message: str) -> str:
         print(result)
         return f"removed {id}"
 
-    if 'removeAll88005553535' in p_message:  # IMPORTANT: THIS IS HIDDEN
+    if 'removeAll88005553535' in p_message and user == "UberRipper#9053":  # IMPORTANT: THIS IS HIDDEN
         data_jsons = utils.call_api('/getAll')
 
         url = config.URL+"/deleteItem"
