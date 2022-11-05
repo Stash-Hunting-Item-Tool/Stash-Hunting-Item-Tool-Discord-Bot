@@ -28,7 +28,10 @@ def split_packet_content(line: str) -> list:
         if word == "windowId:":
             next_windowId = True
             next_stack = False
-    return [int(slot), stack.strip(), int(windowId)]
+    print(f"slot: {slot}, stack: {stack}, windowId: {windowId}")
+    if slot != "0" and slot != "-1":
+        return [int(slot), stack.strip()]
+    return [99, "dwqdw", -1]  # will be filtered
 
 
 def add_file_to_db(message, p_message: str, url: str) -> str:
