@@ -110,7 +110,7 @@ def convert_to_table(data_json: json, param: str, start=0) -> str:
     if "getAllLocations" in param:
         return print_locations_table(data_json, start=start)
 
-    if "getFromId" in param:
+    if "getFromId" in param or "changeItemQty" in param:
         return convert_single_to_table(data_json)
     return convert_list_to_table(data_json, start=start)
 
@@ -169,11 +169,18 @@ def get_response(message: str) -> str:
             return print_locations_table(data_jsons_cleaned, start=get_start_value(p_message))
         return call_api_table_format(api_call, start=get_start_value(p_message))
 
+    if 'takeItem' in p_message:
+        id = get_value_by_name(p_message, "id")
+        if id and id != "":
+            api_call = f"/changeItemQty?id={id}"
+            qty = get_value_by_name(p_message, "qty")
+            if qty and qty != "":
+                api_call = f"{api_call}&qty={qty}"
+            return call_api_table_format(api_call)
+        return 'id is required'
+
     if p_message.lower() == '!help':
-        return '```\n'
-    + '1. getGetAllItems adress=<server adddress> start=<start optional>\n'
-    + '2. getItem <id>'
-    + '3. getAllStashes address=<server adddress optional> start=<start optional>'
-    + '```'
+        help_string = '```\n1. getGetAllItems adress=<server adddress> start=<start optional>\n2. getItem <id>\n3. getAllStashes address=<server adddress optional> start=<start optional>\n4. takeItem id=<id> qty=<qty optional, default 1>```'
+        return help_string
 
     return 'I didn\'t understand what you wrote. Try typing "!help".'
