@@ -1,4 +1,6 @@
+import config
 import json
+from urllib import request
 from urllib.request import urlopen
 from table2ascii import table2ascii as t2a, PresetStyle
 
@@ -166,6 +168,31 @@ def get_response(message: str) -> str:
             return call_api_table_format(api_call)
         return 'id is required'
 
+    if 'removeAllWithLocation' in p_message:  # IMPORTANT: THIS IS HIDDEN
+        # id = utils.get_value_by_name(p_message, "id")
+        # if id and id != "":
+        #     api_call = f"/changeItemQty?id={id}"
+        #     qty = utils.get_value_by_name(p_message, "qty")
+        #     if qty and qty != "":
+        #         api_call = f"{api_call}&qty={qty}"
+        #     return call_api_table_format(api_call)
+        # return 'id is required'
+        x = utils.get_value_by_name(p_message, "x")
+        z = utils.get_value_by_name(p_message, "z")
+        address = utils.get_value_by_name(p_message, "address")
+        data_jsons = utils.call_api('/getAllAtLocation?address=' + address)
+        data_jsons_cleaned = []
+        for obj in data_jsons:
+            if obj["location"]["locX"] == x and obj["location"]["locY"] == y:
+
+                data_jsons_cleaned.append(obj)
+
+        url = config.URL+"/removeItem"
+        for item in data_jsons_cleaned:
+            headers = {"Content-Type": "application/json"}
+            result = request.post(url, json=item, headers=headers)
+            print(result)
+        return "removed"
     if p_message.lower() == '!help':
         help_string = '```\n1. getGetAllItems adress=<server adddress> start=<start optional>\n2. getItem <id>\n3. getAllStashes address=<server adddress optional> start=<start optional>\n4. takeItem id=<id> qty=<qty optional, default 1> \n5. addFile x=<x> z=<z> address=<server adddress> <drag your packet file>```'
         return help_string
