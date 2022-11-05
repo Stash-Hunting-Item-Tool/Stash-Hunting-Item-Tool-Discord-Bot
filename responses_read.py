@@ -1,6 +1,7 @@
 import config
 import json
 from urllib import request
+import requests  # its weird, don't question it
 from urllib.request import urlopen
 from table2ascii import table2ascii as t2a, PresetStyle
 
@@ -169,30 +170,33 @@ def get_response(message: str) -> str:
         return 'id is required'
 
     if 'removeAllWithLocation' in p_message:  # IMPORTANT: THIS IS HIDDEN
-        # id = utils.get_value_by_name(p_message, "id")
-        # if id and id != "":
-        #     api_call = f"/changeItemQty?id={id}"
-        #     qty = utils.get_value_by_name(p_message, "qty")
-        #     if qty and qty != "":
-        #         api_call = f"{api_call}&qty={qty}"
-        #     return call_api_table_format(api_call)
-        # return 'id is required'
         x = utils.get_value_by_name(p_message, "x")
         z = utils.get_value_by_name(p_message, "z")
         address = utils.get_value_by_name(p_message, "address")
         data_jsons = utils.call_api('/getAllAtLocation?address=' + address)
         data_jsons_cleaned = []
         for obj in data_jsons:
-            if obj["location"]["locX"] == x and obj["location"]["locY"] == y:
-
+            if str(obj["location"]["locX"]) == x and str(obj["location"]["locY"]) == z:
                 data_jsons_cleaned.append(obj)
 
-        url = config.URL+"/removeItem"
+        url = config.URL+"/deleteItem"
         for item in data_jsons_cleaned:
             headers = {"Content-Type": "application/json"}
-            result = request.post(url, json=item, headers=headers)
+            result = requests.post(
+                f"{url}?id={item['id']}", json=item, headers=headers)
+            print(item)
             print(result)
         return "removed"
+
+    if 'remove' in p_message:  # IMPORTANT: THIS IS HIDDEN
+        id = utils.get_value_by_name(p_message, "id")
+        url = config.URL+"/deleteItem"
+        headers = {"Content-Type": "application/json"}
+        result = requests.post(
+            f"{url}?id={id}", json={}, headers=headers)
+        print(result)
+        return f"removed {id}"
+
     if p_message.lower() == '!help':
         help_string = '```\n1. getGetAllItems adress=<server adddress> start=<start optional>\n2. getItem <id>\n3. getAllStashes address=<server adddress optional> start=<start optional>\n4. takeItem id=<id> qty=<qty optional, default 1> \n5. addFile x=<x> z=<z> address=<server adddress> <drag your packet file>```'
         return help_string
