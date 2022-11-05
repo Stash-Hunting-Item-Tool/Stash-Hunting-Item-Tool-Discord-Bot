@@ -127,7 +127,7 @@ def get_start_value(message: str) -> int:
 def get_response(message: str, user: str) -> str:
     p_message = message
 
-    if 'getGetAllItems' in p_message and p_message.split(" ")[0] == 'getGetAllItems':
+    if 'getAllItems' in p_message and p_message.split(" ")[0] == 'getAllItems':
         address = utils.get_value_by_name(p_message, "address")
         if address and address != "":
             api_call = '/getAllAtLocation?address=' + address
@@ -197,20 +197,22 @@ def get_response(message: str, user: str) -> str:
         print(result)
         return f"removed {id}"
 
-    if 'removeAll88005553535' in p_message and user == "UberRipper#9053":  # IMPORTANT: THIS IS HIDDEN
-        data_jsons = utils.call_api('/getAll')
+    # if 'removeAll' in p_message and user == "UberRipper#9053":  # IMPORTANT: THIS IS HIDDEN
+    #     print("REMOVING EVERYTING")
+    #     data_jsons = utils.call_api('/getAllItems')
+    #     print(data_jsons)
 
-        url = config.URL+"/deleteItem"
-        for item in data_jsons:
-            headers = {"Content-Type": "application/json"}
-            result = requests.post(
-                f"{url}?id={item['id']}", json=item, headers=headers)
-            print(item)
-            print(result)
-        return "removed"
+    #     url = config.URL+"/deleteItem"
+    #     for item in data_jsons:
+    #         headers = {"Content-Type": "application/json"}
+    #         result = requests.post(
+    #             f"{url}?id={item['id']}", json=item, headers=headers)
+    #         print(item)
+    #         print(result)
+    #     return "removed everything"
 
     if p_message.lower() == '!help':
-        help_string = '```\n1. getGetAllItems adress=<server adddress> start=<start optional>\n2. getItem <id>\n3. getAllStashes address=<server adddress optional> start=<start optional>\n4. takeItem id=<id> qty=<qty optional, default 1> \n5. addFile x=<x> z=<z> address=<server adddress> <drag your packet file>```'
+        help_string = '```\n1. getAllItems adress=<server adddress> start=<start optional>\n2. getItem <id>\n3. getAllStashes address=<server adddress optional> start=<start optional>\n4. takeItem id=<id> qty=<qty optional, default 1> \n5. addFile x=<x> z=<z> address=<server adddress> <drag your packet file>```'
         return help_string
 
     return 'I didn\'t understand what you wrote. Try typing "!help".'
