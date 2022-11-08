@@ -134,10 +134,26 @@ def get_response(message: str, user: str) -> str:
             start_value = get_start_value(p_message)
 
             name = utils.get_value_by_name(p_message, "name")
+            data_json = []
             if name != "":
-                return call_api_table_format(f"/getAllAtLocationWithName?address={address}&name={name}", start=start_value)
+                # return call_api_table_format(f"/getAllAtLocationWithName?address={address}&name={name}", start=start_value)
+                data_json = utils.call_api(
+                    f"/getAllAtLocationWithName?address={address}&name={name}")
+            else:
+                data_json = utils.call_api(api_call)
 
-            return call_api_table_format(api_call, start=start_value)
+            x = utils.get_value_by_name(p_message, "x")
+            z = utils.get_value_by_name(p_message, "z")
+
+            data_cleaned = []
+            for obj in data_json:
+                if (x == "" or z == "") and (x != "" or z != ""):
+                    return "Please enter both x and z coordinates"
+                if str(obj["location"]["locX"]) == x and str(obj["location"]["locY"]) == z:
+                    data_cleaned.append(obj)
+
+            return convert_list_to_table(data_cleaned, start=start_value)
+            # return call_api_table_format(api_call, start=start_value)
 
         return 'Please enter location too'
 
@@ -212,7 +228,7 @@ def get_response(message: str, user: str) -> str:
     #     return "removed everything"
 
     if p_message.lower() == '!help':
-        help_string = '```\n1. getAllItems adress=<server adddress> start=<start optional>\n2. getItem <id>\n3. getAllStashes address=<server adddress optional> start=<start optional>\n4. takeItem id=<id> qty=<qty optional, default 1> \n5. addFile x=<x> z=<z> address=<server adddress> <drag your packet file>```'
+        help_string = '```\n1. getAllItems adress=<server adddress> start=<start optional> x=<x coordinate optional> y=<y coordinate optional>\n2. getItem <id>\n3. getAllStashes address=<server adddress optional> start=<start optional>\n4. takeItem id=<id> qty=<qty optional, default 1> \n5. addFile x=<x> z=<z> address=<server adddress> <drag your packet file>```'
         return help_string
 
     return 'I didn\'t understand what you wrote. Try typing "!help".'
