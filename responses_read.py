@@ -149,7 +149,7 @@ def get_response(message: str, user: str) -> str:
             for obj in data_json:
                 if (x == "" or z == "") and (x != "" or z != ""):
                     return "Please enter both x and z coordinates"
-                if str(obj["location"]["locX"]) == x and str(obj["location"]["locY"]) == z:
+                if str(obj["location"]["locX"]) == x and str(obj["location"]["locY"]) == z or x == "":
                     data_cleaned.append(obj)
 
             return convert_list_to_table(data_cleaned, start=start_value)

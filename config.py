@@ -4,6 +4,14 @@ ALLOWED_USERNAMES = [
     "chezter009#6714"
 ]
 
+FULL_ACCESS = [
+    "UberRipper#9053",
+    "chezter009#6714"
+]
+PARTIAL_ACCESS = [
+
+]
+
 ALLOWED_CHANNELS = [
     "shit"
 ]

@@ -60,7 +60,7 @@ def add_file_to_db(message, p_message: str, url: str) -> str:
     for item in items:
         data = {"name": f"{item}",
                 "qty": items[item],
-                "comment": "done by discord bot",
+                "comment": f"(added_by:{message.author};)",
                 "location": {
                     "locX": x,
                     "locY": z,
